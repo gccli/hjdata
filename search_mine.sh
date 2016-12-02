@@ -64,7 +64,7 @@ function process_pic() {
             fi
 
             echo "$match  $level            $modified"
-            if [ $level -ge 60 ]; then
+            if [ $level -ge $min_lv ]; then
                 echo "$x,$y,$level," >> $output
             fi
         fi
