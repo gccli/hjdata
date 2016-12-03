@@ -29,7 +29,46 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h1>
-<a id="hjdata" class="anchor" href="#hjdata" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hjdata</h1>
+<a id="coordinate-for-district-401" class="anchor" href="#coordinate-for-district-401" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Coordinate for District 401</h1>
+
+<h2>
+<a id="原理" class="anchor" href="#%E5%8E%9F%E7%90%86" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>原理</h2>
+
+<p>收集坐标的过程分为两步：</p>
+
+<h3>
+<a id="1-获取原始信息" class="anchor" href="#1-%E8%8E%B7%E5%8F%96%E5%8E%9F%E5%A7%8B%E4%BF%A1%E6%81%AF" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1) 获取原始信息</h3>
+
+<p>在Android模拟器上运行游戏，再通过自动化工具遍历每个矿的坐标，如果坐标为矿，则将其对应的信息截图，例如：
+<img src="6_245.bmp" alt="6,245" title="矿标"></p>
+
+<h3>
+<a id="2-分析并提取信息" class="anchor" href="#2-%E5%88%86%E6%9E%90%E5%B9%B6%E6%8F%90%E5%8F%96%E4%BF%A1%E6%81%AF" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2) 分析并提取信息</h3>
+
+<p>有了原始矿标的截图信息后，利用OCR技术，提取图中的数字和文字信息。这一步主要通过<a href="search_mine.sh">search_mine.sh</a>脚本完成。</p>
+
+<h3>
+<a id="漏报说明" class="anchor" href="#%E6%BC%8F%E6%8A%A5%E8%AF%B4%E6%98%8E" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>漏报说明：</h3>
+
+<p>由于截图和图像识别的不稳定等因素，这里列出的坐标难免会有遗漏。漏报包括以下方面：</p>
+
+<ul>
+<li>截图误差 - 由于网络不稳定，导致一些图没有截下来。或者，在截图中产生的一些系统信息导致截图模糊，也会影响识别的效果。</li>
+<li>OCR识别准确度 - 在对数字识别时，有时会将6识别成5，将8识别成3，在观察了一部分样本后，脚本最大可能的修正了数据。</li>
+</ul>
+
+<h2>
+<a id="坐标数据" class="anchor" href="#%E5%9D%90%E6%A0%87%E6%95%B0%E6%8D%AE" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>坐标数据</h2>
+
+<p>我们只关心58级以上矿的坐标，以下链接列出的匀是58级以上的矿标。坐标x每10个区间存一个文件，如下0-9代表x为0至9所有的坐标。文件中的一行代表矿的x坐标，y坐标，level级别，type类型（iron:铁, cu:铜, oil:油, si:硅, gem:宝石）</p>
+
+<p><a href="result/0-9.csv">0-9</a></p>
+
+<p><a href="result/10-19.csv">10-19</a></p>
+
+<p><a href="result/20-29.csv">20-29</a></p>
+
+<p><a href="result/30-39.csv">30-39</a></p>
         </section>
 
         <aside id="sidebar">
