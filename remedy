@@ -1,0 +1,35 @@
+#! /bin/bash
+
+function remedy() {
+    local file=$1
+
+    local name=$(basename $file| awk -F'.' '{ print $1 }')
+    local min=$(echo $name | awk -F '-' '{ print $1 }')
+    local max=$(echo $name | awk -F '-' '{ print $2 }')
+
+    [ -z "$min" ] && echo "bad file" && exit 1
+    [ -z "$max" ] && echo "bad file" && exit 1
+
+    local num=$(wc -l $file| awk '{ print $1 }')
+    sed -n "2,${num}p" $file > /tmp/$name
+
+    while read line
+    do
+        x=$(echo $line | awk -F, '{ print $1 }')
+        [ -z "$x" ] && break
+
+        if [ $x -ge $min -a $x -le $max ]; then
+            echo $line >> /tmp/$name
+        fi
+    done < userdata.txt
+
+    sort -u -t, -V /tmp/$name > /tmp/$name.csv
+    sed -i '1ix,y,level,type' /tmp/$name.csv
+    mv /tmp/$name.csv $file
+    git diff $file
+}
+
+for file in result/*.csv
+do
+    remedy $file
+done

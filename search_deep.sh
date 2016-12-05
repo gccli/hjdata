@@ -9,7 +9,6 @@ if [ "$csv_input"x == "x" ]; then
     exit 0
 fi
 
-
 function process_csv() {
     local csv_input=$1
     local line_num=0
