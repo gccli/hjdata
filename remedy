@@ -30,7 +30,7 @@ function remedy() {
 }
 
 
-sed -i '/^[0-9]+ coordinates/d' README.md
+sed -i '/coordinates for x/,/coordinates for x/d' README.md
 
 for file in result/*.csv
 do
