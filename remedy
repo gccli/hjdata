@@ -31,5 +31,12 @@ function remedy() {
 
 for file in result/*.csv
 do
+    name=$(basename $file| awk -F'.' '{ print $1 }')
+
     remedy $file
+
+    num=$(wc -l $file| awk '{ print $1 }')
+    num=$(($num-1))
+
+    echo -e "\nCoordinate for x=$name:  [$name]($file)  ($num)" >> README.md
 done

@@ -24,18 +24,20 @@
 
 ## 坐标数据
 
-  我们只关心58级以上矿的坐标，以下链接列出的匀是58级以上的矿标。坐标x每10个区间存一个文件，如下0-9代表x为0至9所有的坐标。文件中的一行代表矿的x坐标，y坐标，level级别，type类型（iron:铁, cu:铜, oil:油, si:硅, gem:宝石）
+  我们只关心58级以上矿的坐标，以下链接列出的匀是58级以上的矿标。坐标x每10个区间存一个文件，如下0-9代表x为0至9所有的坐标。文件中的一行代表矿的x坐标，y坐标，level级别，type类型（铁, 铜, 油, 硅, 宝石）
 
-[0-9](result/0-9.csv)
+Coordinate Data
 
-[10-19](result/10-19.csv)
+Coordinate for x=0-9:  [0-9](result/0-9.csv)  (183)
 
-[20-29](result/20-29.csv)
+Coordinate for x=10-19:  [10-19](result/10-19.csv)  (243)
 
-[30-39](result/30-39.csv)
+Coordinate for x=20-29:  [20-29](result/20-29.csv)  (201)
 
-[40-49](result/40-49.csv)
+Coordinate for x=30-39:  [30-39](result/30-39.csv)  (187)
 
-[50-59](result/50-59.csv)
+Coordinate for x=40-49:  [40-49](result/40-49.csv)  (218)
 
-[60-69](result/60-69.csv)
+Coordinate for x=50-59:  [50-59](result/50-59.csv)  (224)
+
+Coordinate for x=60-69:  [60-69](result/60-69.csv)  (210)
