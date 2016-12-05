@@ -70,3 +70,9 @@
 224 coordinates for x from  50 to  59:  [here](result/50-59.csv)
 
 210 coordinates for x from  60 to  69:  [here](result/60-69.csv)
+
+181 coordinates for x from  70 to  79:  [here](result/70-79.csv)
+
+214 coordinates for x from  80 to  89:  [here](result/80-89.csv)
+
+118 coordinates for x from  90 to  99:  [here](result/90-99.csv)
