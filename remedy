@@ -30,7 +30,26 @@ function remedy() {
 }
 
 
-sed -i '/coordinates for x/,/coordinates for x/d' README.md
+#sed -i '/coordinates for x/,/coordinates for x/d' README.md
+
+#for file in result/*.csv
+#do
+#    name=$(basename $file| awk -F'.' '{ print $1 }')
+#    min=$(echo $name | awk -F '-' '{ print $1 }')
+#    max=$(echo $name | awk -F '-' '{ print $2 }')
+
+#    remedy $file
+
+#    num=$(wc -l $file| awk '{ print $1 }')
+#    num=$(($num-1))
+
+#    printf "\n%-3s coordinates for x from %3s to %3s:  [here]($file)\n" $num $min $max >> README.md
+#done
+
+
+column=0
+echo "|x|count|x|count|x|count" >> README.md
+echo "|----|----|----|----|----|----" >> README.md
 
 for file in result/*.csv
 do
@@ -43,5 +62,14 @@ do
     num=$(wc -l $file| awk '{ print $1 }')
     num=$(($num-1))
 
-    printf "\n%-3s coordinates for x from %3s to %3s:  [here]($file)\n" $num $min $max >> README.md
+    #printf "\n%-3s coordinates for x from %3s to %3s:  [here]($file)\n" $num $min $max >> README.md
+
+    column=$(($column+1))
+    if [ $column -lt 3 ]; then
+        echo -n "|[$name]($file)|$num" >> README.md
+    else
+        column=0
+        echo "|[$name]($file)|$num" >> README.md
+    fi
 done
+echo -e '\n--------'>> README.md

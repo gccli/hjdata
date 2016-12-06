@@ -55,24 +55,10 @@
 ## 坐标数据
 
 我们只关心58级以上矿的坐标，以下链接列出的匀是58级以上的矿标。坐标x每10个区间存一个文件，如下0-9代表x为0至9所有的坐标。文件中的一行代表矿的x坐标，y坐标，level级别，type类型（铁, 铜, 油, 硅, 宝石）
-
-
-183 coordinates for x from   0 to   9:  [here](result/0-9.csv)
-
-243 coordinates for x from  10 to  19:  [here](result/10-19.csv)
-
-201 coordinates for x from  20 to  29:  [here](result/20-29.csv)
-
-187 coordinates for x from  30 to  39:  [here](result/30-39.csv)
-
-218 coordinates for x from  40 to  49:  [here](result/40-49.csv)
-
-224 coordinates for x from  50 to  59:  [here](result/50-59.csv)
-
-210 coordinates for x from  60 to  69:  [here](result/60-69.csv)
-
-181 coordinates for x from  70 to  79:  [here](result/70-79.csv)
-
-214 coordinates for x from  80 to  89:  [here](result/80-89.csv)
-
-118 coordinates for x from  90 to  99:  [here](result/90-99.csv)
+|x|count|x|count|x|count
+|----|----|----|----|----|----
+|[0-9](result/0-9.csv)|183|[10-19](result/10-19.csv)|243|[20-29](result/20-29.csv)|201
+|[30-39](result/30-39.csv)|187|[40-49](result/40-49.csv)|218|[50-59](result/50-59.csv)|224
+|[60-69](result/60-69.csv)|210|[70-79](result/70-79.csv)|181|[80-89](result/80-89.csv)|214
+|[90-99](result/90-99.csv)|231
+--------
