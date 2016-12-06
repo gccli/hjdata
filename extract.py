@@ -8,52 +8,54 @@ import time
 import math
 import argparse
 
+label_mapping = {'硅':'si','宝':'gem','铁':'iron','铜':'cu','油':'oil'}
 parser = argparse.ArgumentParser(description='Extract coordinate for specific conditions')
 
-parser.add_argument('-c', '--count', type=int,
-                    help='Extract coordinate no more than N')
-parser.add_argument('-xy', nargs=2, type=int,
-                    help='Extract coordinates near by x and y')
-parser.add_argument('-d', '--distance', type=float, default=100,
-                    help='When specify xy, the distance = sqrt(abs(x1-x)^2 +abs(y1-y)^2)')
-parser.add_argument('-t', type=str, dest='label',
-                    help='Extract coordinate for specific type')
-parser.add_argument('-ge', type=int,
+parser.add_argument('-c', type=int, dest='count',
+                    help='Extract coordinate no more than COUNT')
+parser.add_argument('-xy', nargs=2, type=int, metavar=('X', 'Y'),
+                    help='Extract coordinates near by X and Y')
+parser.add_argument('-r', type=float, default=100, dest='radius',
+                    help='When specify xy, the RADIUS = sqrt(abs(x-x0)^2+abs(y-y0)^2)')
+parser.add_argument('-ge', type=int, metavar='N',
                     help='Extract mine level greater than or equal to N')
-parser.add_argument('-le', type=int,
+parser.add_argument('-le', type=int, metavar='N',
                     help='Extract mine level less than or equal to N')
-parser.add_argument('-eq', type=int,
+parser.add_argument('-eq', type=int, metavar='N',
                     help='Extract mine level less equal to N')
+parser.add_argument('label', nargs='*', choices=['si','gem','iron','cu','oil'])
 
-parser.add_argument('csvfiles', nargs='*', help='csv files')
 args = parser.parse_args()
 
-csvfiles = args.csvfiles
-if not csvfiles:
-    csvfiles = glob.glob('result/*.csv')
-
+csvfiles = glob.glob('result/*.csv')
 for path in csvfiles:
     fp = open(path, 'r')
 
     for line in fp.readlines():
-        dest=line.strip().split(',')
-        x,y,l=dest[:3]
+        line_fields=line.strip().split(',')
+        x,y,l=line_fields[:3]
         if x == 'x':
             continue
 
         x=int(x)
         y=int(y)
         l=int(l)
+        t=''
+        if len(line_fields) > 3 and line_fields[3]:
+            t = line_fields[3]
         if args.ge and l < args.ge:
             continue
         if args.le and l > args.le:
             continue
         if args.eq and l != args.eq:
             continue
-
-        if args.label and len(dest) > 3:
-            if dest[3] != args.label:
+        if args.label and not t:
+            continue
+        if args.label and t:
+            label = label_mapping[t]
+            if not label in args.label:
                 continue
+
         if args.xy:
             a=abs(args.xy[0]-x)
             b=abs(args.xy[1]-y)

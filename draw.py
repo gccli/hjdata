@@ -12,7 +12,6 @@ from matplotlib.transforms import Affine2D
 import mpl_toolkits.axisartist.floating_axes as floating_axes
 from scipy.stats import gaussian_kde
 
-
 # http://stackoverflow.com/questions/17411940/matplotlib-scatter-plot-legend
 class Coordinate(object):
     areas = []
@@ -40,9 +39,12 @@ class Coordinate(object):
             y = int(y)
             l = int(l)
 
-            coord = {"xy": [x,y], "level":l}
+            coord = {"xy": [x,y], "level":l, "label":''}
             if len(line_fields) > 3:
                 coord['label'] = line_fields[3]
+
+            if kwargs.has_key('label') and kwargs['label'] != coord['label']:
+                continue
 
             self.flat_coords.append(coord)
 
@@ -68,23 +70,17 @@ class Coordinate(object):
                 print subarea
         print 'Divided map into {0} areas'.format(len(self.areas))
 
-    def scatter(self, filt=None):
-        for name, v in self.coords.items():
-            coords = v['coords']
-            if filt and filt != name:
-                continue
+    def scatter(self, **kwargs):
+        x = [ i['xy'][0] for i in self.flat_coords ]
+        y = [ i['xy'][1] for i in self.flat_coords ]
 
-            x = [ i['xy'][0] for i in coords ]
-            y = [ i['xy'][1] for i in coords ]
+        xy = np.vstack([x, y])
+        z = gaussian_kde(xy)(xy)
 
+        plt.scatter(x, y, c=z, alpha=0.5, s=100)
 
-            xy = np.vstack([x, y])
-            z = gaussian_kde(xy)(xy)
-
-            plt.scatter(x, y, c=z, label=name, alpha=0.5, s=100)
-
-            #plt.scatter(x, y, c=self.coords[name]['color'], label=name, alpha=0.5,
-            #            edgecolors='black')
+        #plt.scatter(x, y, c=self.coords[name]['color'], label=name, alpha=0.5,
+        #            edgecolors='black')
 
         plt.axis([0, 600, 0, 600])
         plt.legend()
@@ -124,7 +120,7 @@ class Coordinate(object):
 if __name__ == '__main__':
     coord = Coordinate()
     coord.plot()
-    #coord.scatter('silicon')
+    coord.scatter()
 
 #plot_extents = 0, 10, 0, 10
 #transform = Affine2D().rotate_deg(45)
