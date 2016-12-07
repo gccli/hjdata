@@ -19,7 +19,7 @@ parser.add_argument('-r', type=float, default=100, dest='radius',
                     help='When -xy is given, search radius no more than RADIUS, default is 100')
 parser.add_argument('-level', nargs=2, metavar=('OP', 'N'),
                     help='Extract specific mine level, where OP must be one of (gt, ge, eq, le, lt), e.g. -level gt 60')
-parser.add_argument('label', nargs='?', choices=['si','gem','iron','cu','oil'])
+parser.add_argument('label', nargs='*', choices=['si','gem','iron','cu','oil'])
 
 args = parser.parse_args()
 
