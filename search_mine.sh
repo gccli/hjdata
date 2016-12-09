@@ -37,13 +37,15 @@ function process_pic() {
         echo "x,y,level,type" > $output
     fi
 
-    if [ ! -f $outdir/tmp/$name.txt ]; then
-        tesseract $file $outdir/tmp/$name myconfig 2>/dev/null
+    outbase=$outdir/tmp/$x/$name
+
+    if [ ! -f ${outbase}.txt ]; then
+        tesseract $file $outbase myconfig 2>/dev/null
         sleep 0.05
     fi
 
-    local match_line=$(egrep '(Lv|va)[. ]*[0-9]+$' $outdir/tmp/$name.txt | sed -n '1p')
-    local match=$(egrep -o '(Lv|va)[. ]*[0-9]+$' $outdir/tmp/$name.txt | sed -n '1p')
+    local match_line=$(egrep '(Lv|va)[. ]*[0-9]+$' $outbase.txt | sed -n '1p')
+    local match=$(egrep -o '(Lv|va)[. ]*[0-9]+$' $outbase.txt | sed -n '1p')
     if [ "$match"x == "x" ]; then
         logger -s "$xystr not match - tesseract $file stdout myconfig"
     else
