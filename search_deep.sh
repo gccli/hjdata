@@ -29,7 +29,7 @@ function process_csv() {
         file="pic/$x/$x"_"$y.bmp"
         name=$(basename $file | awk -F. '{ print $1 }')_chi
 
-        result=$outdir/chi/$name
+        result=$outdir/tmp/$x/$name
 
         cmd="tesseract -l chi_sim $file $result chicfg"
         if [ ! -f $result.txt ]; then
