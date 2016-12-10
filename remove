@@ -1,0 +1,22 @@
+#! /bin/bash
+
+x=$1
+y=$2
+[ -z "$1" ] && echo "Usage: $0 x [y]" && exit 1
+
+if [ -n "$y" ]; then
+    # TODO: remove line from csv
+    xi=$(($x/10))
+    xj=$(($xi*10))
+    xk=$(($xj+9))
+    resultfile=result/${xj}-${xk}.csv
+
+    echo remove "$x,$y" from $resultfile
+    echo remove pic/$x/${x}_${y}.bmp result/tmp/$x/${x}_${y}.txt result/tmp/$x/${x}_${y}_chi.txt
+    sed -i "/$x,$y/d" $resultfile
+    rm -f pic/$x/${x}_${y}.bmp
+    rm -f result/tmp/$x/${x}_${y}.txt result/tmp/$x/${x}_${y}_chi.txt
+else
+    echo "rm -rf result/tmp/$x/*"
+    echo "rm -rf pic/$x"
+fi

@@ -1,6 +1,5 @@
 #! /bin/bash
 
-PATH=$PATH:$HOME/local/bin
 outdir=result
 csv_input=$1
 
@@ -12,26 +11,34 @@ fi
 function process_csv() {
     local csv_input=$1
     local line_num=0
+    local csv_output=/tmp/$(basename ${csv_input}).tmp
+    local nomatch=/tmp/nomatch
+    echo
+    echo "-------- output to file $csv_output --------"
+    rm -f $csv_output
+    rm -f $nomatch
     while read line
     do
-        line_num=$(($line_num+1))
-        if [ $line_num -eq 1 ]; then
-            echo $line
-            continue
-        fi
-
-        echo -n $line
-
+        [ -z "$line" ] && echo "empty line" && continue
         x=$(echo $line | awk -F, '{ print $1 }')
         y=$(echo $line | awk -F, '{ print $2 }')
         l=$(echo $line | awk -F, '{ print $3 }')
+        [ "$x" == "x" ] && continue
+        echo -n $line
+
+        xy="$x,$y"
+        userline=$(grep "$xy" userdata.txt)
+        if [ -n "$userline" ]; then
+            echo "userdata - $userline"
+            echo $userline >> $csv_output
+            continue
+        fi
 
         file="pic/$x/$x"_"$y.bmp"
         name=$(basename $file | awk -F. '{ print $1 }')_chi
-
         result=$outdir/tmp/$x/$name
 
-        cmd="tesseract -l chi_sim $file $result chicfg"
+        cmd="tesseract -l chi_sim $file $result"
         if [ ! -f $result.txt ]; then
             $cmd 2>/dev/null
         fi
@@ -40,13 +47,7 @@ function process_csv() {
         label=$(egrep -o "$pattern" $result.txt | sed -n '1p')
         if [ -z "$label" ]; then
             logger -s "$line - not match: $cmd"
-            xy="$x,$y"
-            userline=$(grep "$xy" userdata.txt)
-            if [ -n "$userline" ]; then
-                logger -s "$line - add user data"
-                sed -i "${line_num}d" $csv_input
-                sed -i "${line_num}i$userline" $csv_input
-            fi
+            echo "$xy," >> $nomatch
             continue
         fi
         echo $label
@@ -58,10 +59,12 @@ function process_csv() {
         [ $label == "锔" ] && label='铜'
         [ $label == "桐" ] && label='铜'
         [ $label == "洞" ] && label='铜'
-
-        sed -i "${line_num}d" $csv_input
-        sed -i "${line_num}i${x},${y},${l},${label}" $csv_input
+        echo "${x},${y},${l},${label}" >>  $csv_output
     done < $csv_input
+
+    echo
+    echo "-------- done process file $csv_output --------"
+    sed -i '1ix,y,level,type' $csv_output
 }
 
 mkdir -p $outdir/chi

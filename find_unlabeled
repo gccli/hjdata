@@ -1,0 +1,22 @@
+#! /bin/bash
+
+# find unlabeled mine
+
+function find_unlabel() {
+    local file=$1
+    while read line
+    do
+        label=$(echo $line | awk -F, '{ print $4 }')
+        [ -n "$label" ] && continue
+        echo $line | awk -F, '{ print $1, $2, $3 }'| sed 's/ /,/g;s/$/,/'
+    done < $file
+}
+
+if [ -z "$1" ]; then
+    for file in $(ls result/*.csv | sort -V)
+    do
+        find_unlabel $file
+    done
+else
+    find_unlabel $1
+fi
