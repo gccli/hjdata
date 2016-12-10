@@ -40,6 +40,13 @@ function process_csv() {
         label=$(egrep -o "$pattern" $result.txt | sed -n '1p')
         if [ -z "$label" ]; then
             logger -s "$line - not match: $cmd"
+            xy="$x,$y"
+            userline=$(grep "$xy" userdata.txt)
+            if [ -n "$userline" ]; then
+                logger -s "$line - add user data"
+                sed -i "${line_num}d" $csv_input
+                sed -i "${line_num}i$userline" $csv_input
+            fi
             continue
         fi
         echo $label
