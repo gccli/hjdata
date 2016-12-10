@@ -36,7 +36,7 @@ function process_csv() {
             $cmd 2>/dev/null
         fi
 
-        pattern='[硅宝铁铜桐油锔铢圭筐失]{1}'
+        pattern='[硅宝铁铜桐洞油锔铢圭筐失]{1}'
         label=$(egrep -o "$pattern" $result.txt | sed -n '1p')
         if [ -z "$label" ]; then
             logger -s "$line - not match: $cmd"
@@ -50,12 +50,12 @@ function process_csv() {
         [ $label == "铢" ] && label='铁'
         [ $label == "锔" ] && label='铜'
         [ $label == "桐" ] && label='铜'
+        [ $label == "洞" ] && label='铜'
 
         sed -i "${line_num}d" $csv_input
         sed -i "${line_num}i${x},${y},${l},${label}" $csv_input
     done < $csv_input
 }
-
 
 mkdir -p $outdir/chi
 if [ "$csv_input" == "all" ]; then
