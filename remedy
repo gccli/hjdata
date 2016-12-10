@@ -36,7 +36,7 @@ echo -e "\nAll coordinates\n" >> README.md
 echo -e "|X|count|X|count|X|count" >> README.md
 echo -e "|----|:----:|----|:----:|----|:----:" >> README.md
 
-for file in result/*.csv
+for file in $(ls result/*.csv | sort -V)
 do
     name=$(basename $file| awk -F'.' '{ print $1 }')
     min=$(echo $name | awk -F '-' '{ print $1 }')
