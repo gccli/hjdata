@@ -60,7 +60,6 @@ for path in csvfiles:
             if not t:
                 continue
             else:
-                print t
                 label = label_mapping[t]
                 if not label in args.label:
                     continue
