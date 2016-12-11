@@ -27,7 +27,7 @@ function process_csv() {
         echo -n $line
 
         xy="$x,$y"
-        userline=$(grep "^$xy" userdata.txt)
+        userline=$(egrep "^$xy," userdata.txt)
         if [ -n "$userline" ]; then
             echo "userdata - $userline"
             echo $userline >> $csv_output
