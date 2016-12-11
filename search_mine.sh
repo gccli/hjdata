@@ -1,28 +1,28 @@
 #! /bin/bash
 
 PATH=$PATH:$HOME/local/bin
+
 min_lv=58
 outdir=result
 
 last_x=1
 last_y=1
-
-function cleanup() {
-    find $outdir -name "*.csv" | xargs rm -f
-    rm -f .x .y
-    rm -f $outdir/tmp/*.txt
-}
+x_max=599
+y_max=599
 
 function load_xy() {
-    [ -f .x ] && last_x=$(cat .x)
-    [ -f .y ] && last_y=$(cat .y)
+    last_x=$(awk '{ print $1 }' .xy)
+    last_y=$(awk '{ print $2 }' .xy)
+    local xmax=$(awk '{ print $3 }' .xy)
+    local ymax=$(awk '{ print $4 }' .xy)
+    [ -n "$xmax" ] && x_max=$xmax
+    [ -n "$ymax" ] && y_max=$ymax
 
-    logger -s "Last coordinate: ($last_x,$last_y)"
+    logger -s "Last coordinate: ($last_x,$last_y) to ($x_max,$y_max)"
 }
 
 function save_xy() {
-    echo -n $1 > .x
-    echo -n $2 > .y
+    echo -n $1 $2 > .xy
 }
 
 function process_pic() {
@@ -101,20 +101,16 @@ function process_pic() {
     save_xy $x $y
 }
 
-if [ "$1"x == "cleanupx" ]; then
-    echo do cleanup
-    cleanup
-    exit 0
-fi
-mkdir -p $outdir/tmp
 
+mkdir -p $outdir/tmp
 load_xy
-for x in $(seq $last_x 599)
+
+for x in $(seq $last_x $x_max)
 do
     ix=$((x/10))
     output=$outdir/"$((10*$ix))-$(($ix*10+9))".csv
     logger -s "X=$x result output to $output"
-    for y in $(seq $last_y 599)
+    for y in $(seq $last_y $y_max)
     do
         name="pic/$x/$x"_"$y.bmp"
         [ ! -f $name ] && continue
