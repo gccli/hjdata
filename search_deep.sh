@@ -27,7 +27,7 @@ function process_csv() {
         echo -n $line
 
         xy="$x,$y"
-        userline=$(grep "$xy" userdata.txt)
+        userline=$(grep "^$xy" userdata.txt)
         if [ -n "$userline" ]; then
             echo "userdata - $userline"
             echo $userline >> $csv_output
@@ -65,6 +65,8 @@ function process_csv() {
     echo
     echo "-------- done process file $csv_output --------"
     sed -i '1ix,y,level,type' $csv_output
+
+    [ -f  $csv_output ] && mv $csv_output $csv_input && git diff $csv_input
 }
 
 mkdir -p $outdir/chi
