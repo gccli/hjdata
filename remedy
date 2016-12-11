@@ -21,7 +21,7 @@ function remedy() {
         if [ $x -ge $min -a $x -le $max ]; then
             echo $line >> /tmp/$name
         fi
-    done < userdata.txt
+    done < userdata.csv
 
     sort -u -t, -V /tmp/$name > /tmp/$name.csv
     sed -i '1ix,y,level,type' /tmp/$name.csv
