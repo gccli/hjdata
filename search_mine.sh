@@ -5,6 +5,8 @@ PATH=$PATH:$HOME/local/bin
 min_lv=58
 outdir=result
 
+echo -n > /tmp/first_nomatch
+
 last_x=1
 last_y=1
 x_max=599
@@ -48,6 +50,7 @@ function process_pic() {
     local match=$(egrep -o '(Lv|va)[. ]*[0-9]+$' $outbase.txt | sed -n '1p')
     if [ "$match"x == "x" ]; then
         logger -s "$xystr not match - tesseract $file stdout myconfig"
+        echo "$x,$y," >> /tmp/first_nomatch
     else
         modified=0
         modified_info=
@@ -63,6 +66,7 @@ function process_pic() {
 
         if [ $level -gt 80 ]; then
             logger -s "$xystr - bad value"
+            echo "$x,$y," >> /tmp/first_nomatch
         else
             div_start=0
             if [ -n "$level_start" ]; then
