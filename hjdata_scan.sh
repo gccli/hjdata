@@ -3,18 +3,25 @@
 source hjdata_config.sh
 
 function analyze_line() {
-    local match_line=$1
+    local x=$1
+    local y=$2
+
+    local match_line=$3
     local modified=0
     local modified_info=
 
-    local level_start=$(echo $match_line | egrep -o '^[6][02468]')
+    local level_start=$(echo "$match_line" | egrep -o '^[6][02468]')
     local match=$(echo $match_line | egrep -o '(Lv|va)[. ]*[0-9]+$')
     local level=$(echo $match | egrep -o '[0-9]+')
 
-    if [ $level -gt 80 ]; then
-        logger -s "bad value"
-    else
+    mkdir -p tmp/small/${x}
+    mkdir -p tmp/bad/${x}
 
+    if [ $level -gt 80 ]; then
+        logger -s "bad value for $x,$y move"
+        mv pic/${x}/${y}.bmp tmp/bad/${x}/
+        [ $? -ne 0 ] && exit 1
+    else
         div_start=0
         if [ -n "$level_start" ]; then
             div_start=6
@@ -46,6 +53,12 @@ function analyze_line() {
         if [ $level -ge $min_lv ]; then
             echo "$x,$y,$level," >> $output
         fi
+
+        if [ $level -lt 30 ]; then
+            echo "move to small"
+            mv pic/${x}/${y}.bmp tmp/small/${x}/
+            [ $? -ne 0 ] && exit 1
+        fi
     fi
 }
 
@@ -72,6 +85,7 @@ function generate_report() {
         pattern='[0-9]+级[油铁硅铜宝]'
     fi
 
+    mkdir -p tmp/nomatch/${x}
     mkdir -p $(dirname $outbase)
     if [ ! -f ${outbase}.txt ]; then
         $cmd 2>/dev/null
@@ -81,9 +95,16 @@ function generate_report() {
     if [ "${match_line}"x == "x" ]; then
         logger -s "$xystr not match - $cmd"
         echo "$x,$y," >> ${feedback}
+
+        mv pic/${x}/${y}.bmp tmp/nomatch/${x}/
+        [ $? -ne 0 ] && exit 1
     else
         xystr=$(printf "$xystr %-16s" "match:[${match_line}]")
         logger -s "$xystr"
+
+        if [ $lang == "eng" ]; then
+            analyze_line $x $y "${match_line}"
+        fi
     fi
 }
 
