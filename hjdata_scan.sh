@@ -58,7 +58,7 @@ function generate_report() {
     local feedback=feedback.${lang}
     local xystr=$(printf "%-16s" "($x,$y)")
 
-    outbase=result/${x}/tmp/${y}.${lang}
+    outbase=result/tmp/${x}/${y}.${lang}
     cmd=
     pattern=
     if [ $lang == "eng" ]; then
@@ -79,7 +79,7 @@ function generate_report() {
 
     local match_line=$(egrep "$pattern" $outbase.txt | sed -n '1p')
     if [ "${match_line}"x == "x" ]; then
-        logger -s "$xystr not match - tesseract $path stdout myconfig"
+        logger -s "$xystr not match - $cmd"
         echo "$x,$y," >> ${feedback}
     else
         xystr=$(printf "$xystr %-16s" "match:[${match_line}]")
