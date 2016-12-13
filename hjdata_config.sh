@@ -1,7 +1,7 @@
 #! /bin/bash
 
-xstart=10
-ystart=342
+xstart=3
+ystart=131
 
 export xstart
 export ystart

@@ -2,6 +2,53 @@
 
 source hjdata_config.sh
 
+function analyze_line() {
+    local match_line=$1
+    local modified=0
+    local modified_info=
+
+    local level_start=$(echo $match_line | egrep -o '^[6][02468]')
+    local match=$(echo $match_line | egrep -o '(Lv|va)[. ]*[0-9]+$')
+    local level=$(echo $match | egrep -o '[0-9]+')
+
+    if [ $level -gt 80 ]; then
+        logger -s "bad value"
+    else
+
+        div_start=0
+        if [ -n "$level_start" ]; then
+            div_start=6
+        fi
+
+        div=$(($level/10))
+        rem=$(($level%10))
+        if [ $rem -eq 3 ]; then
+            rem=8
+            modified=1
+            modified_info="fix rem from 3 to 8"
+        elif [ $rem -eq 5 ]; then
+            rem=6
+            modified=1
+            modified_info="fix rem from 5 to 6"
+        fi
+
+        if [ $div_start -eq 6 -a $div -eq 5 ]; then
+            div=6
+            modified=2
+            modified_info="fixed from $level to $level_start"
+        fi
+
+        if [ $modified -ne 0 ]; then
+            level=$(($div*10+$rem))
+        fi
+
+        logger -s "$xystr $modified_info"
+        if [ $level -ge $min_lv ]; then
+            echo "$x,$y,$level," >> $output
+        fi
+    fi
+}
+
 function generate_report() {
     local lang=$1
     local path=$2
@@ -44,9 +91,9 @@ function scan() {
     local lang=$1
     logger -s "Last coordinate: ($xstart,$ystart) to ($xmax,$ymax)"
 
-    for x in $(seq $xstart $xmax)
+    for x in $(seq ${xstart} ${xmax})
     do
-        for y in $(seq $ystart $ymax)
+        for y in $(seq ${ystart} ${ymax})
         do
             fullpath="pic/$x/$y.bmp"
             [ ! -f $fullpath ] && continue
@@ -58,8 +105,10 @@ function scan() {
     done
 }
 
-scan eng
-sort -u -V feedback.eng
+if [ -z "$1" ]; then
+    echo "Usage: $0 <eng|chi|chi_sim>"
+    exit 1
+fi
 
-scan chi
-sort -u -V feedback.chi
+scan $1
+sort -u -V feedback.$1
