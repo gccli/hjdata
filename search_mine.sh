@@ -5,8 +5,7 @@ PATH=$PATH:$HOME/local/bin
 min_lv=58
 outdir=result
 
-echo -n > /tmp/first_nomatch
-
+feedback=
 last_x=1
 last_y=1
 x_max=599
@@ -21,6 +20,9 @@ function load_xy() {
     [ -n "$ymax" ] && y_max=$ymax
 
     logger -s "Last coordinate: ($last_x,$last_y) to ($x_max,$y_max)"
+
+    feedback="${last_x}.${x_max}.txt"
+    rm -f $feedback
 }
 
 function save_xy() {
@@ -50,7 +52,7 @@ function process_pic() {
     local match=$(egrep -o '(Lv|va)[. ]*[0-9]+$' $outbase.txt | sed -n '1p')
     if [ "$match"x == "x" ]; then
         logger -s "$xystr not match - tesseract $file stdout myconfig"
-        echo "$x,$y," >> /tmp/first_nomatch
+        echo "$x,$y," >> $feedback
     else
         modified=0
         modified_info=
@@ -66,7 +68,7 @@ function process_pic() {
 
         if [ $level -gt 80 ]; then
             logger -s "$xystr - bad value"
-            echo "$x,$y," >> /tmp/first_nomatch
+            echo "$x,$y," >> $feedbback
         else
             div_start=0
             if [ -n "$level_start" ]; then
