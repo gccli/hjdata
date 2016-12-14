@@ -2,6 +2,14 @@
 
 source hjdata_config.sh
 
+if [ -z "$1" ]; then
+    echo "Usage: $0 <eng|chi|chi_sim>"
+    exit 1
+fi
+
+feedback=feedback.$1
+touch ${feedback}
+
 function analyze_line() {
     local x=$1
     local y=$2
@@ -51,7 +59,7 @@ function analyze_line() {
 
         logger -s "$xystr $modified_info"
         if [ $level -ge $min_lv ]; then
-            echo "$x,$y,$level," >> $output
+            echo "$x,$y,$level," >> ${feedback}
         fi
 
         if [ $level -lt 30 ]; then
@@ -66,9 +74,8 @@ function generate_report() {
     local lang=$1
     local path=$2
     local x=$3
-    local y=$(basename $path | awk -F. '{ print $1 }')
+    local y=$4
 
-    local feedback=feedback.${lang}
     local xystr=$(printf "%-16s" "($x,$y)")
 
     outbase=result/tmp/${x}/${y}.${lang}
@@ -76,13 +83,13 @@ function generate_report() {
     pattern=
     if [ $lang == "eng" ]; then
         cmd="tesseract $path $outbase eng.config"
-        pattern='(Lv|va)[. ]*[0-9]+$'
+        pattern=${pattern_eng}
+    elif [ $lang == "chi_sim" ]; then
+        cmd="tesseract -l chi_sim $path $outbase"
+        pattern=${pattern_chi_sim}
     elif [ $lang == "chi" ]; then
         cmd="tesseract -l chi $path $outbase"
-        pattern='[硅宝铁铜桐洞油锔铢圭筐失]{1}'
-    elif [ $lang == "chi" ]; then
-        cmd="tesseract -l chi_sim $path $outbase"
-        pattern='[0-9]+级[油铁硅铜宝]'
+        pattern=${pattern_chi}
     fi
 
     mkdir -p tmp/nomatch/${x}
@@ -118,18 +125,13 @@ function scan() {
         do
             fullpath="pic/$x/$y.bmp"
             [ ! -f $fullpath ] && continue
-            generate_report ${lang} ${fullpath} ${x}
+            generate_report ${lang} ${fullpath} ${x} ${y}
             sety ${y}
         done
 
         setx ${x}
     done
 }
-
-if [ -z "$1" ]; then
-    echo "Usage: $0 <eng|chi|chi_sim>"
-    exit 1
-fi
 
 scan $1
 sort -u -V feedback.$1
