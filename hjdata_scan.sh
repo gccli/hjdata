@@ -14,7 +14,7 @@ function generate_eng() {
     outb_eng=result/tmp/${x}/${y}.eng
     outb_chi=result/tmp/${x}/${y}.chi
     cmd_eng="tesseract $path $outb_eng eng.config"
-    cmd_chi="tesseract -l chi $path $outb_eng"
+    cmd_chi="tesseract -l chi $path $outb_chi"
 
     mkdir -p tmp/{nomatch,small,bad}/${x}
     mkdir -p $(dirname ${outb_eng})
@@ -24,6 +24,7 @@ function generate_eng() {
     fi
     if [ ! -f ${outb_chi}.txt ]; then
         ${cmd_chi} 2>/dev/null
+        echo ${cmd_chi}
     fi
 
     local match_line_eng=$(egrep "${pattern_eng}" ${outb_eng}.txt | sed -n '1p')
@@ -32,8 +33,8 @@ function generate_eng() {
     if [ "${match_line_eng}"x == "x" -o "${match_line_chi}"x == "x" ]; then
         logger -s "$xystr not match - ${outb_eng} ${outb_chi}"
         echo "$x,$y,notmatch" >> ${feedback}
-        mv pic/${x}/${y}.bmp tmp/nomatch/${x}/
-        [ $? -ne 0 ] && exit 1
+        #mv pic/${x}/${y}.bmp tmp/nomatch/${x}/
+        #[ $? -ne 0 ] && exit 1
         return
     fi
 
@@ -92,7 +93,7 @@ function generate_eng() {
     fi
 
     logger -s "$xystr $modified_info"
-    if [ $level -lt 30 ]; then
+    if [ $level -le $low_lv ]; then
         echo "remove to small"
         mv pic/${x}/${y}.bmp tmp/small/${x}/
         [ $? -ne 0 ] && exit 1

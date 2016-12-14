@@ -1,13 +1,14 @@
 #! /bin/bash
 
 xstart=0
-ystart=267
+ystart=34
 
 export xstart
 export ystart
 export xmax=599
 export ymax=599
 export min_lv=58
+export low_lv=30
 
 export pattern_eng='(Lv|va)[. ]*[0-9]+$'
 export pattern_chi='[0-9]+级[油铁硅铜宝]'
