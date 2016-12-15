@@ -1,7 +1,7 @@
 #! /bin/bash
 
 xstart=0
-ystart=34
+ystart=294
 
 export xstart
 export ystart
