@@ -25,8 +25,12 @@ def get_config(cfgitem):
         return config.getint('default', cfgitem)
     elif cfgitem == 'min_level':
         return config.getint('default', cfgitem)
-    else:
-        raise "Not support"
+    elif cfgitem == 'min_level':
+        return config.get('default', cfgitem)
+
+    return config.get('default', cfgitem)
+
+fpfeedback = open(get_config('feedback'), 'w')
 
 def set_config(cfgitem, val):
     config.set('default', cfgitem, val)
@@ -88,8 +92,12 @@ def analyze(x, y, filename, fpresult):
 
     match = myre.search(xtext)
     if not match:
-        print '{0} - not match in text file:{1} cmd:{2}'.format(logstr, outb_txt, cmd_chi)
-        time.sleep(2)
+        print '{0} not match in text file:{1} cmd:{2}'.format(logstr, outb_txt, cmd_chi)
+        print xtext
+        fpfeedback.write('{0},{1}\n'.format(x,y))
+        fpfeedback.flush()
+        time.sleep(1)
+        return
 
     level = match.group(1)
     label = match.group(2)
@@ -99,12 +107,18 @@ def analyze(x, y, filename, fpresult):
     line = '{:<24}'.format('[{0}]'.format(line))
 
     print '{0} match:{1} level:{2} label:{3}'.format(logstr, line, level, label)
+    fpresult.write('{0},{1},{2},{3}\n'.format(x,y,level,label))
 
 def scan():
     xstart = config.getint('default', 'xstart')
     ystart = config.getint('default', 'ystart')
     xmax = config.getint('default', 'xmax')
     ymax = config.getint('default', 'ymax')
+
+
+    prompt='Start from ({0},{1}) to ({2},{3}), continue (y/n)? '.format(xstart,ystart,xmax,ymax)
+    c = raw_input(prompt)
+    if c != 'y': sys.exit(0)
 
     for x in range(xstart, xmax):
         if not os.path.isdir('pic/{0}'.format(x)):
@@ -123,4 +137,9 @@ def scan():
         set_config('xstart', str(x))
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'reset':
+        print 'Reset last scan coordinate'
+        set_config('xstart', 0)
+        set_config('ystart', 0)
+
     scan()
