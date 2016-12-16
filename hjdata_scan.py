@@ -6,6 +6,7 @@ import re
 import sys
 import time
 import shlex
+import signal
 import codecs
 import subprocess
 from hjdata_config import config
@@ -98,10 +99,22 @@ class HjAnalysis(HjData):
             config.set_config('xstart', x)
             ystart = 0
 
+
+
+
 if __name__ == '__main__':
+    hjant = None
+
+    def signal_handler(signo, frame):
+        if hjant:
+            print '\nQuit and commit data'
+            hjant.commit()
+        sys.exit(0)
+
     if len(sys.argv) > 1 and sys.argv[1] == 'reset':
         config.set_config('xstart', 0)
         config.set_config('ystart', 0)
 
+    signal.signal(signal.SIGINT, signal_handler)
     hjant = HjAnalysis()
     hjant.scan()
