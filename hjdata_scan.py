@@ -17,25 +17,6 @@ class HjAnalysis(HjData):
         super(HjAnalysis, self).__init__()
         self.fpfeedback = open(config.get_config('feedback'), 'w')
 
-    def get_bmp(self, x, y):
-        return 'pic/{0}/{1}.bmp'.format(x,y)
-
-    def get_report_base(self, x, y):
-        path = 'result/tmp/{0}/{1}.chi'.format(x,y)
-        dirn = os.path.dirname(path)
-        if not os.path.isdir(dirn):
-            os.makedirs(dirn)
-
-        return path
-
-    def get_result(x):
-        path = 'result/tmp/{0}/result.txt'.format(x)
-        dirn = os.path.dirname(path)
-        if not os.path.isdir(dirn):
-            os.makedirs(dirn)
-
-        return path
-
     def create_tmpdir(self, x, y):
         tmp = 'tmp/notmatch/{0}'.format(x)
         if not os.path.isdir(tmp):
