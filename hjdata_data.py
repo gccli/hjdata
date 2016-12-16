@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import csv
 import sqlite3
 from hjdata_config import config
