@@ -102,7 +102,6 @@ class HjData(object):
             pass
 
         self.delete(x, y)
-        self.export()
 
 if __name__ == '__main__':
     hjdata = HjData()

@@ -7,18 +7,21 @@ import sys
 import time
 import shlex
 import signal
+import shutil
 import codecs
 import subprocess
 from hjdata_config import config
 from hjdata_data import HjData
 
-
 class HjAnalysis(HjData):
-    modify_rule = {53:58, 55:56, 43:48, 45:46}
+    modify_rule = {15:16, 13:18, 25:26, 23:28, 35:36, 33:38, 45:46, 43:48, 55:56, 53:58, 65:66, 63:68}
 
     def __init__(self, **kwargs):
         super(HjAnalysis, self).__init__()
         self.fpfeedback = open(config.get_config('feedback'), 'w')
+
+        pattern = u'([0-9]+)级([铜铁油硅宝]).*Lv[^0-9]*([0-9]+)'
+        self.regex = re.compile(pattern, re.U)
 
     def create_tmpdir(self, x, y):
         tmp = 'tmp/notmatch/{0}'.format(x)
@@ -29,15 +32,12 @@ class HjAnalysis(HjData):
         if not os.path.isdir(tmp):
             os.makedirs(tmp)
 
-        tmp = 'tmp/bak/{0}'.format(x)
+        tmp = 'tmp/bad/{0}'.format(x)
         if not os.path.isdir(tmp):
             os.makedirs(tmp)
 
     def analyze(self, x, y, filename):
-        pattern = u'([0-9]+)级([铜铁油硅宝]).*Lv[^0-9]*([0-9]{2})'
         xystr = '({0},{1})'.format(x, y)
-
-        myre = re.compile(pattern, re.U)
 
         self.create_tmpdir(x, y)
         outb_chi = self.get_report_base(x, y)
@@ -54,13 +54,12 @@ class HjAnalysis(HjData):
         xtext = fp.read()
         fp.close()
 
-        match = myre.search(xtext)
+        match = self.regex.search(xtext)
         if not match:
             print '{0} not match in text file:{1} cmd:{2}'.format(logstr, outb_txt, cmd_chi)
             print xtext
-            self.fpfeedback.write('{0},{1}\n'.format(x,y))
-            self.fpfeedback.flush()
-            time.sleep(1)
+            self.fpfeedback.write('{0},{1},mismatch\n'.format(x,y))
+            # time.sleep(1)
             return
 
         level  = int(match.group(1))
@@ -71,21 +70,42 @@ class HjAnalysis(HjData):
         line = match.group(0).encode('utf8')
         line = '{:<24}'.format('[{0}]'.format(line))
 
+        level2 = level2%100
+
         infostr = ''
         if self.modify_rule.has_key(level):
             infostr = 'modify {0} to {1}'.format(level, self.modify_rule[level])
             level = self.modify_rule[level]
 
+        if self.modify_rule.has_key(level2):
+            infostr += ' lv {0} to {1}'.format(level2, self.modify_rule[level2])
+            level2 = self.modify_rule[level2]
+
         if level != level2:
-            infostr += ' check level'
-            self.fpfeedback.write('{0},{1},level not match\n'.format(x,y))
+            infostr += ' not equal'
+            self.fpfeedback.write('{0},{1},ne\n'.format(x,y))
 
         if (level%2) == 1:
             infostr += ' odd level'
-            self.fpfeedback.write('{0},{1},odd level\n'.format(x,y))
+            self.fpfeedback.write('{0},{1},odd\n'.format(x,y))
 
         print '{0} match:{1} level:({2},{3}) label:{4} {5}' \
             .format(logstr, line, level, level2, label, infostr)
+
+        if level <= 30:
+            dest = 'tmp/low/{0}/{1}.bmp'.format(x,y)
+            ddir = os.path.dirname(dest)
+            try:
+                os.mkdir(ddir)
+            except:
+                pass
+            shutil.move(filename, dest)
+            self.remove(x,y)
+            print 'file moved'
+            return
+
+        if (level%2) == 1:
+            return
 
         self.insert(x,y,level,label)
 
@@ -112,6 +132,8 @@ class HjAnalysis(HjData):
 
                 self.analyze(x, y, fullpath)
                 config.set_config('ystart', y)
+
+                self.fpfeedback.flush()
             self.commit()
 
             config.set_config('xstart', x)
