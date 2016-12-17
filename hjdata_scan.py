@@ -100,7 +100,7 @@ class HjAnalysis(HjData):
             except:
                 pass
             shutil.move(filename, dest)
-            self.remove(x,y)
+            self.remove(x,y,0)
             print 'file moved'
             return
 

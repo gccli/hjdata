@@ -5,6 +5,8 @@ import os
 import sys
 import csv
 import sqlite3
+import shlex
+import subprocess
 from hjdata_config import config
 
 class HjData(object):
@@ -86,21 +88,24 @@ class HjData(object):
 
             fp.close()
 
-    def remove(self, x, y):
+    def remove(self, x, y, prompt=1):
         bmp = self.get_bmp(x, y)
         tmp = self.get_report_base(x, y) + '.txt'
 
-        print 'rm -f {0} {1}'.format(bmp, tmp)
-        try:
-            os.unlink(bmp)
-        except:
-            pass
+        delete_cmd = 'rm -f {0} {1}'.format(bmp, tmp)
+        if prompt:
+            args = shlex.split('ls -l {0}'.format(bmp))
+            subprocess.call(args)
+            args = shlex.split('cat {0}'.format(tmp))
+            subprocess.call(args)
+            prompt_str = delete_cmd + ' continue (y/n)? '
+            c = raw_input(prompt_str)
+            if c != 'y': sys.exit(0)
+        else:
+            print delete_cmd
 
-        try:
-            os.unlink(tmp)
-        except:
-            pass
-
+        args = shlex.split(delete_cmd)
+        subprocess.call(args)
         self.delete(x, y)
 
 if __name__ == '__main__':
