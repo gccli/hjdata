@@ -47,11 +47,12 @@ class HjData(object):
 
 
     def delete(self, x, y):
-        sql = 'DELETE FROM {0} WHERE x={1} y={2}'.format(self.tbname, x, y)
+        sql = 'DELETE FROM {0} WHERE x={1} AND y={2}'.format(self.tbname, x, y)
         try:
             self.cursor.execute(sql)
             print sql
         except sqlite3.Error as e:
+            print 'DELETE', e.args[0]
             return False
 
         return True
