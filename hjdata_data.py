@@ -48,6 +48,7 @@ class HjData(object):
         sql = 'DELETE FROM {0} WHERE x={1} y={2}'.format(self.tbname, x, y)
         try:
             self.cursor.execute(sql)
+            print sql
         except sqlite3.Error as e:
             return False
 
@@ -87,11 +88,19 @@ class HjData(object):
 
     def remove(self, x, y):
         bmp = self.get_bmp(x, y)
-        tmp = self.get_report_base(x.y) + '.txt'
+        tmp = self.get_report_base(x, y) + '.txt'
 
         print 'rm -f {0} {1}'.format(bmp, tmp)
-        os.unlink(bmp)
-        os.unlink(tmp)
+        try:
+            os.unlink(bmp)
+        except:
+            pass
+
+        try:
+            os.unlink(tmp)
+        except:
+            pass
+
         self.delete(x, y)
         self.export()
 

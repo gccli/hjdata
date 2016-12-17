@@ -14,6 +14,8 @@ from hjdata_data import HjData
 
 
 class HjAnalysis(HjData):
+    modify_rule = {53:58, 55:56, 43:48, 45:46}
+
     def __init__(self, **kwargs):
         super(HjAnalysis, self).__init__()
         self.fpfeedback = open(config.get_config('feedback'), 'w')
@@ -61,14 +63,30 @@ class HjAnalysis(HjData):
             time.sleep(1)
             return
 
-        level = match.group(1)
-        label = match.group(2)
-        label = label.encode('utf8')
+        level  = int(match.group(1))
+        label  = match.group(2)
+        level2 = int(match.group(3))
+        label  = label.encode('utf8')
 
         line = match.group(0).encode('utf8')
         line = '{:<24}'.format('[{0}]'.format(line))
 
-        print '{0} match:{1} level:{2} label:{3}'.format(logstr, line, level, label)
+        infostr = ''
+        if self.modify_rule.has_key(level):
+            infostr = 'modify {0} to {1}'.format(level, self.modify_rule[level])
+            level = self.modify_rule[level]
+
+        if level != level2:
+            infostr += ' check level'
+            self.fpfeedback.write('{0},{1},level not match\n'.format(x,y))
+
+        if (level%2) == 1:
+            infostr += ' odd level'
+            self.fpfeedback.write('{0},{1},odd level\n'.format(x,y))
+
+        print '{0} match:{1} level:({2},{3}) label:{4} {5}' \
+            .format(logstr, line, level, level2, label, infostr)
+
         self.insert(x,y,level,label)
 
     def scan(self):
@@ -98,9 +116,6 @@ class HjAnalysis(HjData):
 
             config.set_config('xstart', x)
             ystart = 0
-
-
-
 
 if __name__ == '__main__':
     hjant = None
