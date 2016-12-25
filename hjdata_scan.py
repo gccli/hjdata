@@ -57,7 +57,7 @@ class HjAnalysis(HjData):
         match = self.regex.search(xtext)
         if not match:
             print '{0} not match in text file:{1} cmd:{2}'.format(logstr, outb_txt, cmd_chi)
-            print xtext
+            print xtext.encode('utf8')
             self.fpfeedback.write('{0},{1},mismatch\n'.format(x,y))
             # time.sleep(1)
             return
