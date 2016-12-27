@@ -19,6 +19,12 @@ parser.add_argument('-r', type=float, default=100, dest='radius',
                     help='When -xy is given, search radius no more than RADIUS, default is 100')
 parser.add_argument('-level', nargs=2, metavar=('OP', 'N'),
                     help='Extract specific mine level, where OP must be one of (gt, ge, eq, le, lt), e.g. -level gt 60')
+
+parser.add_argument('-x', nargs=2, metavar=('OP', 'N'),
+                    help='Extract specific X, where OP must be one of (gt, ge, eq, le, lt), e.g. -x gt 300')
+parser.add_argument('-y', nargs=2, metavar=('OP', 'N'),
+                    help='Extract specific Y, where OP must be one of (gt, ge, eq, le, lt), e.g. -y gt 350')
+
 parser.add_argument('label', nargs='*', choices=['si','gem','iron','cu','oil'])
 
 args = parser.parse_args()
@@ -55,6 +61,15 @@ for path in csvfiles:
         if args.level:
             if not exec_level(l, args.level[0], int(args.level[1])):
                 continue
+
+        if args.x:
+            if not exec_level(x, args.x[0], int(args.x[1])):
+                continue
+
+        if args.y:
+            if not exec_level(y, args.y[0], int(args.y[1])):
+                continue
+
 
         if args.label:
             if not t:
